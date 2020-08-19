@@ -1,25 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using HexLib;
 
 public class HexMapHandler : MonoBehaviour
 {
 	public int mapRadius;
 	List<Hex> map;
+	public Layout layout;
+
+	Dictionary<Hex, GameObject> objectsOnMap;
 
 	void Start()
 	{
+		objectsOnMap = new Dictionary<Hex, GameObject>();
+
 		GenerateMap();
 		GenerateMesh();
 	}
-
 	void GenerateMesh()
 	{
 		List<Vector2> vertices2d = new List<Vector2>();
 		List<int> indices = new List<int>();
 
-		Layout layout = new Layout(Layout.pointy, new Vector2(1, 1), new Vector2(0, 0));
+		layout = new Layout(Layout.pointy, new Vector2(.5775f, .5775f), new Vector2(0, 0));
 		int hexIndex = 0;
 		foreach(Hex hex in map)
 		{
@@ -41,6 +44,8 @@ public class HexMapHandler : MonoBehaviour
 		GetComponent<MeshFilter>().mesh = mesh;
 		mesh.vertices = vertices3d;
 		mesh.triangles = indices.ToArray();
+
+		GetComponent<MeshRenderer>().materials[0].SetColor("_Color", Color.gray);
 	}
 
 	void GenerateMap()
@@ -55,6 +60,31 @@ public class HexMapHandler : MonoBehaviour
 			{
 				map.Add(new Hex(q, r, -q - r));
 			}
+		}
+	}
+
+	public void PlaceObject(Hex hex, Object requestedObject)
+	{
+		if(!objectsOnMap.ContainsKey(hex) && hex.Length() <= mapRadius)
+		{
+			GameObject gameObject = new GameObject("device");
+
+			SpriteRenderer spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+			spriteRenderer.sprite = requestedObject.sprite;
+
+			gameObject.transform.SetParent(transform);
+			gameObject.transform.position = layout.HexToPixel(hex);
+
+			objectsOnMap.Add(hex, gameObject);
+		}
+	}
+
+	public void RemoveObject(Hex hex)
+	{
+		if(objectsOnMap.ContainsKey(hex))
+		{
+			Destroy(objectsOnMap[hex]);
+			objectsOnMap.Remove(hex);
 		}
 	}
 }

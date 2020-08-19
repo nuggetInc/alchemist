@@ -4,17 +4,12 @@ using UnityEngine;
 
 public class Object
 {
-	Sprite sprite;
-	string name;
+	public Sprite sprite;
+	public string name;
 
-	public Object(Sprite mySprite, string myName)
+	public Object(Sprite objectSprite, string objectName)
 	{
-		sprite = mySprite;
-		name = myName;
+		sprite = objectSprite;
+		name = objectName;
 	}
-}
-
-public Object[] objects =
-{
-
 }

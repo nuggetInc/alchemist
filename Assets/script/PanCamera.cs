@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PanCamera : MonoBehaviour
 {
@@ -17,22 +18,41 @@ public class PanCamera : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if(Input.GetMouseButtonDown(1))
-			lastMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		else if(Input.GetMouseButton(1) == true)
+		if(EventSystem.current.IsPointerOverGameObject() == false)
 		{
-			Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			Vector3 diff = lastMousePos - mousePos;
-			tr.position += diff;
-			lastMousePos = mousePos + diff;
-		}
+			/*if(Input.GetMouseButtonDown(1))
+				lastMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			else if(Input.GetMouseButton(1) == true)
+			{
+				Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+				Vector3 diff = lastMousePos - mousePos;
+				tr.position += diff;
+				lastMousePos = mousePos + diff;
+			}*/
 
+			if(Input.GetKey(KeyCode.A))
+			{
+				tr.position += new Vector3(-5, 0, 0) * Camera.main.orthographicSize * Time.deltaTime;
+			}
+			if(Input.GetKey(KeyCode.D))
+			{
+				tr.position += new Vector3(5, 0, 0) * Camera.main.orthographicSize * Time.deltaTime;
+			}
+			if(Input.GetKey(KeyCode.W))
+			{
+				tr.position += new Vector3(0, 5, 0) * Camera.main.orthographicSize * Time.deltaTime;
+			}
+			if(Input.GetKey(KeyCode.S))
+			{
+				tr.position += new Vector3(0, -5, 0) * Camera.main.orthographicSize * Time.deltaTime;
+			}
 
-		float scroll = Input.mouseScrollDelta.y;
-		if(scroll != 0)
-		{
-			scroll = Mathf.Max(Mathf.Min(Camera.main.orthographicSize - scroll, 20), 1);
-			Camera.main.orthographicSize = scroll;
+			float scroll = Input.mouseScrollDelta.y;
+			if(scroll != 0)
+			{
+				scroll = Mathf.Max(Mathf.Min(Camera.main.orthographicSize - scroll, 20), 1);
+				Camera.main.orthographicSize = scroll;
+			}
 		}
 	}
 }
