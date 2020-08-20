@@ -302,18 +302,29 @@ public struct Layout
 	{
 		Orientation M = orientation;
 		float angle = 2.0f * Mathf.PI * (M.start_angle - corner) / 6.0f;
-		return new Vector2(size.x * Mathf.Cos(angle), size.y * Mathf.Sin(angle));
+		return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
 	}
 
 
-	public Vector2[] PolygonCorners(Hex h)
+	public Vector2[] PolygonCorners(Hex hex)
 	{
 		Vector2[] corners = new Vector2[6];
-		Vector2 center = HexToPixel(h);
+		Vector2 center = HexToPixel(hex);
 		for(int i = 0; i < 6; i++)
 		{
 			Vector2 offset = HexCornerOffset(i);
-			corners[i] = new Vector2(center.x + offset.x, center.y + offset.y);
+			corners[i] = new Vector2(center.x + offset.x * size.x, center.y + offset.y * size.y);
+		}
+		return corners;
+	}
+
+	public Vector2[] UVPolygonCorners(Hex hex)
+	{
+		Vector2[] corners = new Vector2[6];
+		for(int i = 0; i < 6; i++)
+		{
+			Vector2 offset = HexCornerOffset(i);
+			corners[i] = (offset * .5f + new Vector2(.5f, .5f));
 		}
 		return corners;
 	}

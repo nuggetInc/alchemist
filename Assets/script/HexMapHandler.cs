@@ -16,11 +16,16 @@ public class HexMapHandler : MonoBehaviour
 
 		GenerateMap();
 		GenerateMesh();
+
+		layout.UVPolygonCorners(new Hex(0, 0, 0));
 	}
+
 	void GenerateMesh()
 	{
 		List<Vector2> vertices2d = new List<Vector2>();
+		List<Vector2> UVCoordinates = new List<Vector2>();
 		List<int> indices = new List<int>();
+		//List<Vector3> normals = new List<Vector3>();
 
 		layout = new Layout(Layout.pointy, new Vector2(.5775f, .5775f), new Vector2(0, 0));
 		int hexIndex = 0;
@@ -29,12 +34,22 @@ public class HexMapHandler : MonoBehaviour
 			Vector2[] polygonCorners = layout.PolygonCorners(hex);
 			vertices2d.AddRange(polygonCorners);
 
+			Vector2[] UVCorners = layout.UVPolygonCorners(hex);
+			UVCoordinates.AddRange(UVCorners);
+
 			Triangulator triangulator = new Triangulator(polygonCorners);
 			foreach(int indice in triangulator.Triangulate())
 			{
 				indices.Add(hexIndex + indice);
 			}
 			hexIndex += 6;
+
+			/*normals.Add(new Vector3(0, 0, 1));
+			normals.Add(new Vector3(0, 0, 1));
+			normals.Add(new Vector3(0, 0, 1));
+			normals.Add(new Vector3(0, 0, 1));
+			normals.Add(new Vector3(0, 0, 1));
+			normals.Add(new Vector3(0, 0, 1));*/
 		}
 
 		Vector3[] vertices3d = System.Array.ConvertAll<Vector2, Vector3>(vertices2d.ToArray(), v => v);
@@ -43,9 +58,12 @@ public class HexMapHandler : MonoBehaviour
 		mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
 		GetComponent<MeshFilter>().mesh = mesh;
 		mesh.vertices = vertices3d;
+		mesh.uv = UVCoordinates.ToArray();
 		mesh.triangles = indices.ToArray();
+		//mesh.normals = normals.ToArray();
+		//mesh.RecalculateNormals();
 
-		GetComponent<MeshRenderer>().materials[0].SetColor("_Color", Color.gray);
+		//GetComponent<MeshRenderer>().materials[0].SetColor("_Color", Color.white);
 	}
 
 	void GenerateMap()
